@@ -84,6 +84,69 @@ def frequency_word(token_path, word_dict_path):
                             # print(word)
                             num[i] += 1
         return num
+    
+   
+
+def s_u_split(train_path, val_path, word_data_path, coco_ref):
+    train_data = np.load(train_path)
+    val_data = np.load(val_path)
+    # with open(word_data_path) as f:
+    #     word_dataset = json.load(f)
+    #     all_token = word_dataset['images']
+    ref_list = os.listdir(coco_ref)
+    # train_sentences = []
+    # val_sentences = []
+    share_word = []
+    train_word = []
+    val_word = []
+    # for file in tqdm(train_data):
+    #     train_name = str(file[0]) + '.npy'
+    #     data_tra = np.load(os.path.join(coco_ref, train_name), allow_pickle=True).item()
+    #     sentence = data_tra['sentence']
+    #     train_sentences.append(sentence)
+    #     # np.save('')
+    # for file in tqdm(val_data):
+    #     val_name = str(file[0]) + '.npy'
+    #     data_val = np.load(os.path.join(coco_ref, val_name), allow_pickle=True).item()
+    #     sentence = data_val['sentence']
+    #     val_sentences.append(sentence)
+    #
+    # np.save('/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/train_sentences.npy', train_sentences)
+    # np.save('/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/val_sentences.npy', val_sentences)
+
+    train_sentences_path = '/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/train_sentences.npy'
+    val_sentences_path = '/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/val_sentences.npy'
+    train_sentences = list(np.load(train_sentences_path, allow_pickle=True))
+    val_sentences = list(np.load(val_sentences_path, allow_pickle=True))
+
+
+    for s in tqdm(train_sentences):
+        for i in range(len(s)):
+            for word in s[i]:
+
+        # for s_1 in s:
+        #     for word in s_1:
+                for s_val in val_sentences:
+                    for j in range(len(s_val)):
+                        for word_val in s_val[j]:
+                            if word == word_val:
+                                share_word.append(word)
+
+    for s in tqdm(train_sentences):
+        for n in range(len(s)):
+            for word in s[n]:
+                for share in share_word:
+                    if word != share:
+                        train_word.append(word)
+    for s in tqdm(val_sentences):
+        for m in range(len(s)):
+            for word in s[m]:
+                for share in share_word:
+                    if word != share:
+                        val_word.append(word)
+    print('Done!!!')
+
+    return  share_word, train_word, val_word
 
 
 
@@ -99,3 +162,10 @@ if __name__ == '__main__':
     # save_ref = token_to_int(token_path, save_ref_path)
     num = frequency_word(token_path=token_path, word_dict_path=tti_path)
     np.save('/mnt/Peng/Projects/image caption/datasets/coco/word_freq.npy', num)
+    
+    
+    share_word, train_word, val_word = s_u_split(train_path=train_set_path, val_path=val_set_path, word_data_path=token_path, coco_ref=save_ref_path)
+    np.save('/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/share_word.npy', share_word)
+    np.save('/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/train_word.npy', train_word)
+    np.save('/mnt/Peng/Projects/image caption/datasets/coco/data/word_split/val_word.npy', val_word)
+    
